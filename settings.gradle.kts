@@ -14,7 +14,6 @@ plugins {
   id("org.hypertrace.dependency-settings") version "0.1.2"
 }
 
-
 configure<DependencyPluginSettingExtension> {
   catalogVersion.set("0.3.11")
 }
