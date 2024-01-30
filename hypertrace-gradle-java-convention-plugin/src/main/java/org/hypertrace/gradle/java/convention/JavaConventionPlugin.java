@@ -1,7 +1,10 @@
 package org.hypertrace.gradle.java.convention;
 
+import java.util.List;
+import java.util.Objects;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.jvm.toolchain.JavaToolchainService;
 import org.gradle.jvm.toolchain.JavaToolchainSpec;
@@ -16,6 +19,7 @@ public class JavaConventionPlugin implements Plugin<Project> {
             unused -> {
               createConvention(target);
               configureToolchain(target);
+              modifyTestJvmArgs(target);
             });
   }
 
@@ -31,6 +35,21 @@ public class JavaConventionPlugin implements Plugin<Project> {
     javaToolchainService(target).compilerFor(spec);
     javaToolchainService(target).launcherFor(spec);
     javaToolchainService(target).javadocToolFor(spec);
+  }
+
+  private void modifyTestJvmArgs(Project target) {
+    Task testTask = target.getTasks().findByName("test");
+    if (Objects.nonNull(testTask)) {
+      // required for junit environment variables for jdk 17+
+      // https://junit-pioneer.org/docs/environment-variables/#warnings-for-reflective-access
+      testTask.setProperty(
+          "jvmArgs",
+          List.of(
+              "--add-opens",
+              "java.base/java.lang=ALL-UNNAMED",
+              "--add-opens",
+              "java.base/java.util=ALL-UNNAMED"));
+    }
   }
 
   private JavaConventionExtension javaConventionExtension(Project target) {
