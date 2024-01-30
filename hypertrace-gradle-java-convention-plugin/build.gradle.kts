@@ -1,6 +1,6 @@
 plugins {
   `java-gradle-plugin`
-  id("org.hypertrace.publish-plugin")
+  alias(commonLibs.plugins.hypertrace.publish)
 }
 
 gradlePlugin {

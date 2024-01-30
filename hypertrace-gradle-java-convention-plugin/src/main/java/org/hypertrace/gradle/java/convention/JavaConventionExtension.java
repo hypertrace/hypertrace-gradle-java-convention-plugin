@@ -7,7 +7,7 @@ import org.gradle.jvm.toolchain.JavaLanguageVersion;
 
 public class JavaConventionExtension {
   static final String EXTENSION_NAME = "javaConvention";
-  Property<JavaLanguageVersion> languageVersion;
+  public final Property<JavaLanguageVersion> languageVersion;
 
   @Inject
   public JavaConventionExtension(ObjectFactory factory) {

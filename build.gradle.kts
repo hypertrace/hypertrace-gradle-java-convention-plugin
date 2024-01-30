@@ -2,10 +2,9 @@ import org.hypertrace.gradle.publishing.HypertracePublishExtension
 import org.hypertrace.gradle.publishing.License
 
 plugins {
-  id("org.hypertrace.ci-utils-plugin") version "0.3.2"
-  id("org.hypertrace.code-style-plugin") version "1.2.0"
-  id("org.hypertrace.publish-plugin") version "1.0.6" apply false
-  id("org.hypertrace.repository-plugin") version "0.4.2"
+  alias(commonLibs.plugins.hypertrace.publish)
+  alias(commonLibs.plugins.hypertrace.ciutils)
+  alias(commonLibs.plugins.hypertrace.codestyle)
 }
 
 subprojects {
