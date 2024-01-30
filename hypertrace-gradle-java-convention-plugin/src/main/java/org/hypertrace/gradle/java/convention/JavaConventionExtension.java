@@ -12,6 +12,6 @@ public class JavaConventionExtension {
   @Inject
   public JavaConventionExtension(ObjectFactory factory) {
     languageVersion =
-        factory.property(JavaLanguageVersion.class).convention(JavaLanguageVersion.of(21));
+        factory.property(JavaLanguageVersion.class).convention(JavaLanguageVersion.of(11));
   }
 }
