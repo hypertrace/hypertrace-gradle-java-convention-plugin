@@ -1,9 +1,11 @@
 package org.hypertrace.gradle.java.convention;
 
 import java.util.List;
+import org.gradle.api.JavaVersion;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPluginExtension;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.testing.Test;
 import org.gradle.jvm.toolchain.JavaToolchainService;
 import org.gradle.jvm.toolchain.JavaToolchainSpec;
@@ -17,6 +19,7 @@ public class JavaConventionPlugin implements Plugin<Project> {
             "java",
             unused -> {
               createConvention(target);
+              configureCompatibility(target);
               configureToolchain(target);
               modifyTestJvmArgs(target);
             });
@@ -28,9 +31,15 @@ public class JavaConventionPlugin implements Plugin<Project> {
         .create(JavaConventionExtension.EXTENSION_NAME, JavaConventionExtension.class);
   }
 
+  private void configureCompatibility(Project target) {
+    Property<JavaVersion> javaVersion = javaConventionExtension(target).compatibilityVersion;
+    javaPluginExtension(target).setTargetCompatibility(javaVersion);
+    javaPluginExtension(target).setTargetCompatibility(javaVersion);
+  }
+
   private void configureToolchain(Project target) {
     JavaToolchainSpec spec = javaPluginExtension(target).getToolchain();
-    spec.getLanguageVersion().set(javaConventionExtension(target).languageVersion);
+    spec.getLanguageVersion().set(javaConventionExtension(target).toolchainVersion);
     javaToolchainService(target).compilerFor(spec);
     javaToolchainService(target).launcherFor(spec);
     javaToolchainService(target).javadocToolFor(spec);
