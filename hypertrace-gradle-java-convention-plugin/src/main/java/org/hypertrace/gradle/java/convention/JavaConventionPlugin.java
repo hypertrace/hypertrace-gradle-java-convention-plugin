@@ -5,7 +5,6 @@ import org.gradle.api.JavaVersion;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPluginExtension;
-import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.testing.Test;
 import org.gradle.jvm.toolchain.JavaToolchainService;
 import org.gradle.jvm.toolchain.JavaToolchainSpec;
@@ -32,8 +31,8 @@ public class JavaConventionPlugin implements Plugin<Project> {
   }
 
   private void configureCompatibility(Project target) {
-    Property<JavaVersion> javaVersion = javaConventionExtension(target).compatibilityVersion;
-    javaPluginExtension(target).setTargetCompatibility(javaVersion);
+    JavaVersion javaVersion = javaConventionExtension(target).compatibilityVersion.get();
+    javaPluginExtension(target).setSourceCompatibility(javaVersion);
     javaPluginExtension(target).setTargetCompatibility(javaVersion);
   }
 
