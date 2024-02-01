@@ -5,6 +5,7 @@ import org.gradle.api.JavaVersion;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPluginExtension;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.testing.Test;
 import org.gradle.jvm.toolchain.JavaToolchainService;
 import org.gradle.jvm.toolchain.JavaToolchainSpec;
@@ -31,15 +32,14 @@ public class JavaConventionPlugin implements Plugin<Project> {
   }
 
   private void configureCompatibility(Project target) {
-    JavaVersion javaVersion = javaConventionExtension(target).languageVersion.get().javaVersion;
+    Property<JavaVersion> javaVersion = javaConventionExtension(target).compatibilityVersion;
     javaPluginExtension(target).setTargetCompatibility(javaVersion);
     javaPluginExtension(target).setTargetCompatibility(javaVersion);
   }
 
   private void configureToolchain(Project target) {
     JavaToolchainSpec spec = javaPluginExtension(target).getToolchain();
-    spec.getLanguageVersion()
-        .set(javaConventionExtension(target).languageVersion.get().javaLanguageVersion);
+    spec.getLanguageVersion().set(javaConventionExtension(target).toolchainVersion);
     javaToolchainService(target).compilerFor(spec);
     javaToolchainService(target).launcherFor(spec);
     javaToolchainService(target).javadocToolFor(spec);
