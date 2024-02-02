@@ -11,20 +11,18 @@ import org.gradle.jvm.toolchain.JavaLanguageVersion;
 public class JavaConventionPlugin implements Plugin<Project> {
 
   public void apply(Project target) {
-    target
-        .getAllprojects()
-        .forEach(
-            project ->
-                project
-                    .getPluginManager()
-                    .withPlugin(
-                        "java",
-                        unused -> {
-                          createConvention(project);
-                          configureCompilerRelease(project);
-                          configureToolchain(project);
-                          modifyTestJvmArgs(project);
-                        }));
+    target.allprojects(
+        project ->
+            project
+                .getPluginManager()
+                .withPlugin(
+                    "java",
+                    unused -> {
+                      createConvention(project);
+                      configureCompilerRelease(project);
+                      configureToolchain(project);
+                      modifyTestJvmArgs(project);
+                    }));
   }
 
   private void createConvention(Project target) {
@@ -43,7 +41,7 @@ public class JavaConventionPlugin implements Plugin<Project> {
                     .getRelease()
                     .set(
                         javaConventionExtension(target)
-                            .compilerRelease
+                            .releaseCompatibility
                             .map(JavaLanguageVersion::asInt)));
   }
 

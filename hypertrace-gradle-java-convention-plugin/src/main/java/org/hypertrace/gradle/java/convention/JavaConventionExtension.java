@@ -7,14 +7,13 @@ import org.gradle.jvm.toolchain.JavaLanguageVersion;
 
 public class JavaConventionExtension {
   static final String EXTENSION_NAME = "javaConvention";
-  public final Property<JavaLanguageVersion> compilerRelease;
   public final Property<JavaLanguageVersion> toolchainVersion;
+  public final Property<JavaLanguageVersion> releaseCompatibility;
 
   @Inject
   public JavaConventionExtension(ObjectFactory factory) {
-    compilerRelease =
-        factory.property(JavaLanguageVersion.class).convention(JavaLanguageVersion.of(21));
     toolchainVersion =
         factory.property(JavaLanguageVersion.class).convention(JavaLanguageVersion.of(21));
+    releaseCompatibility = factory.property(JavaLanguageVersion.class).convention(toolchainVersion);
   }
 }
