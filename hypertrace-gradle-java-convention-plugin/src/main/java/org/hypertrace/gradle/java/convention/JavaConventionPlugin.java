@@ -12,15 +12,23 @@ import org.gradle.jvm.toolchain.JavaToolchainSpec;
 public class JavaConventionPlugin implements Plugin<Project> {
 
   public void apply(Project target) {
+    // plugin meant to be applied at root level, it configures for all nested subprojects
     target
-        .getPluginManager()
-        .withPlugin(
-            "java",
-            unused -> {
-              createConvention(target);
-              configureCompatibility(target);
-              configureToolchain(target);
-              modifyTestJvmArgs(target);
+        .getSubprojects()
+        .forEach(
+            subproject -> {
+              subproject
+                  .getPluginManager()
+                  .withPlugin(
+                      "java",
+                      unused -> {
+                        createConvention(subproject);
+                        configureCompatibility(subproject);
+                        configureToolchain(subproject);
+                        modifyTestJvmArgs(subproject);
+                      });
+              // recursive call
+              apply(subproject);
             });
   }
 
@@ -31,6 +39,7 @@ public class JavaConventionPlugin implements Plugin<Project> {
   }
 
   private void configureCompatibility(Project target) {
+    // TODO: resolve about usage of `.get()`
     JavaVersion javaVersion = javaConventionExtension(target).compatibilityVersion.get();
     javaPluginExtension(target).setSourceCompatibility(javaVersion);
     javaPluginExtension(target).setTargetCompatibility(javaVersion);

@@ -8,6 +8,7 @@ import org.gradle.jvm.toolchain.JavaLanguageVersion;
 
 public class JavaConventionExtension {
   static final String EXTENSION_NAME = "javaConvention";
+  // TODO: resolve if need two different for source & target
   public final Property<JavaVersion> compatibilityVersion;
   public final Property<JavaLanguageVersion> toolchainVersion;
 
