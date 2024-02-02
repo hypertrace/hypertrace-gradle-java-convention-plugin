@@ -1,35 +1,30 @@
 package org.hypertrace.gradle.java.convention;
 
 import java.util.List;
-import org.gradle.api.JavaVersion;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPluginExtension;
+import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.api.tasks.testing.Test;
-import org.gradle.jvm.toolchain.JavaToolchainService;
-import org.gradle.jvm.toolchain.JavaToolchainSpec;
+import org.gradle.jvm.toolchain.JavaLanguageVersion;
 
 public class JavaConventionPlugin implements Plugin<Project> {
 
   public void apply(Project target) {
-    // plugin meant to be applied at root level, it configures for all nested subprojects
     target
-        .getSubprojects()
+        .getAllprojects()
         .forEach(
-            subproject -> {
-              subproject
-                  .getPluginManager()
-                  .withPlugin(
-                      "java",
-                      unused -> {
-                        createConvention(subproject);
-                        configureCompatibility(subproject);
-                        configureToolchain(subproject);
-                        modifyTestJvmArgs(subproject);
-                      });
-              // recursive call
-              apply(subproject);
-            });
+            project ->
+                project
+                    .getPluginManager()
+                    .withPlugin(
+                        "java",
+                        unused -> {
+                          createConvention(project);
+                          configureCompilerRelease(project);
+                          configureToolchain(project);
+                          modifyTestJvmArgs(project);
+                        }));
   }
 
   private void createConvention(Project target) {
@@ -38,19 +33,25 @@ public class JavaConventionPlugin implements Plugin<Project> {
         .create(JavaConventionExtension.EXTENSION_NAME, JavaConventionExtension.class);
   }
 
-  private void configureCompatibility(Project target) {
-    // TODO: resolve about usage of `.get()`
-    JavaVersion javaVersion = javaConventionExtension(target).compatibilityVersion.get();
-    javaPluginExtension(target).setSourceCompatibility(javaVersion);
-    javaPluginExtension(target).setTargetCompatibility(javaVersion);
+  private void configureCompilerRelease(Project target) {
+    target
+        .getTasks()
+        .withType(JavaCompile.class)
+        .configureEach(
+            task ->
+                task.getOptions()
+                    .getRelease()
+                    .set(
+                        javaConventionExtension(target)
+                            .compilerRelease
+                            .map(JavaLanguageVersion::asInt)));
   }
 
   private void configureToolchain(Project target) {
-    JavaToolchainSpec spec = javaPluginExtension(target).getToolchain();
-    spec.getLanguageVersion().set(javaConventionExtension(target).toolchainVersion);
-    javaToolchainService(target).compilerFor(spec);
-    javaToolchainService(target).launcherFor(spec);
-    javaToolchainService(target).javadocToolFor(spec);
+    javaPluginExtension(target)
+        .getToolchain()
+        .getLanguageVersion()
+        .set(javaConventionExtension(target).toolchainVersion);
   }
 
   private void modifyTestJvmArgs(Project target) {
@@ -60,14 +61,13 @@ public class JavaConventionPlugin implements Plugin<Project> {
         .getTasks()
         .withType(Test.class)
         .configureEach(
-            task -> {
-              task.jvmArgs(
-                  List.of(
-                      "--add-opens",
-                      "java.base/java.lang=ALL-UNNAMED",
-                      "--add-opens",
-                      "java.base/java.util=ALL-UNNAMED"));
-            });
+            task ->
+                task.jvmArgs(
+                    List.of(
+                        "--add-opens",
+                        "java.base/java.lang=ALL-UNNAMED",
+                        "--add-opens",
+                        "java.base/java.util=ALL-UNNAMED")));
   }
 
   private JavaConventionExtension javaConventionExtension(Project target) {
@@ -76,9 +76,5 @@ public class JavaConventionPlugin implements Plugin<Project> {
 
   private JavaPluginExtension javaPluginExtension(Project target) {
     return target.getExtensions().getByType(JavaPluginExtension.class);
-  }
-
-  private JavaToolchainService javaToolchainService(Project target) {
-    return target.getExtensions().getByType(JavaToolchainService.class);
   }
 }
