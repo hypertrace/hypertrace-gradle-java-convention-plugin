@@ -14,6 +14,7 @@ public class JavaConventionExtension {
   public JavaConventionExtension(ObjectFactory factory) {
     toolchainVersion =
         factory.property(JavaLanguageVersion.class).convention(JavaLanguageVersion.of(21));
-    releaseCompatibility = factory.property(JavaLanguageVersion.class).convention(JavaLanguageVersion.of(11));
+    releaseCompatibility =
+        factory.property(JavaLanguageVersion.class).convention(JavaLanguageVersion.of(11));
   }
 }
