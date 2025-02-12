@@ -1,6 +1,7 @@
 package org.hypertrace.gradle.java.convention;
 
 import java.util.List;
+import org.gradle.api.JavaVersion;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPluginExtension;
@@ -46,6 +47,15 @@ public class JavaConventionPlugin implements Plugin<Project> {
   }
 
   private void configureToolchain(Project target) {
+    if (javaConventionExtension(target)
+        .toolchainVersion
+        .map(v -> v.canCompileOrRun(JavaVersion.current().ordinal() + 1))
+        .getOrElse(false)) {
+      target
+          .getLogger()
+          .lifecycle(
+              "Gradle's java version is not compatible with toolchain configured, consider using higher version of JVM for gradle");
+    }
     javaPluginExtension(target)
         .getToolchain()
         .getLanguageVersion()
