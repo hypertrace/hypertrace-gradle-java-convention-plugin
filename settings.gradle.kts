@@ -3,19 +3,17 @@ import org.hypertrace.gradle.dependency.DependencyPluginSettingExtension
 pluginManagement {
   repositories {
     gradlePluginPortal()
-    maven {
-      url = uri("https://hypertrace.jfrog.io/artifactory/maven")
-    }
+    maven("https://us-maven.pkg.dev/hypertrace-repos/maven")
   }
 }
 
 plugins {
-  id("org.hypertrace.version-settings") version "0.2.1"
-  id("org.hypertrace.dependency-settings") version "0.1.2"
+  id("org.hypertrace.version-settings") version "0.3.0"
+  id("org.hypertrace.dependency-settings") version "0.2.0"
 }
 
 configure<DependencyPluginSettingExtension> {
-  catalogVersion.set("0.3.11")
+  catalogVersion.set("0.3.48")
 }
 
 rootProject.name = "hypertrace-gradle-java-convention-plugin"
